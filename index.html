@@ -1,17 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Firebase</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/styles/default.min.css">
+  <link rel="stylesheet" href="https://highlightjs.org/static/demo/styles/atom-one-dark.css">
 </head>
+<style>
+  * {
+  font-family: 'Kanit', sans-serif;
+}
+</style>
+
 <body>
+  <div class="container mt-5 mb-5">
+    <div class="col-sm-6 mx-auto">
+      <h4 class="text-center">การติดตั้ง</h4>
+    </div>
+    <pre>
+<code class="html hljs">
+    &lt;script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-app.js"&gt;&lt;/script&gt;
+    &lt;script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-auth.js"&gt;&lt;/script&gt;
+    &lt;script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-database.js"&gt;&lt;/script&gt;
+    &lt;script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-firestore.js"&gt;&lt;/script&gt;
+    &lt;script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-messaging.js"&gt;&lt;/script&gt;
+    &lt;script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-functions.js"&gt;&lt;/script&gt;
+
+    &lt;script&gt;
+        var config = {
+          apiKey: "",
+          authDomain: "",
+          databaseURL: "",
+          projectId: "",
+          storageBucket: "",
+          messagingSenderId: ""
+        };
+      firebase.initializeApp(config);
+    &lt;/script&gt;
+</code>
+  </pre>
+    <div class="col-sm-6 mx-auto">
+      <h4 class="text-center">โครงสร้างการเก็บข้อมูล</h4>
+
+    </div>
+    <pre>
+      <code class="javascript hljs">
+          {
+            "users": {
+              "alovelace": {
+                "name": "Ada Lovelace",
+                "contacts": { "ghopper": true },
+              },
+              "ghopper": { ... },
+              "eclarke": { ... }
+            }
+          }
+    </code>
+      </pre>
+
+    <div class="col-sm-6 mx-auto">
+      <h4 class="text-center">แสดงข้อมูลของสมาชิก ที่กำลังล็อกอิน</h4>
+      <div class="card">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">ไอดี : <span id="current-user-id"></span></li>
+          <li class="list-group-item">อีเมล : <span id="current-user-email"></span></li>
+        </ul>
+      </div>
+    </div>
+    <pre>
+          <code class="javascript hljs">
+              firebase.auth().onAuthStateChanged(user => {
+               console.log(user.uid);
+               console.log(user.email);
+              });
+        </code>
+      </pre>
+    <div class="col-sm-6 mx-auto">
+      <form id="formLogin" class="mt-5">
+        <h4 class="text-center">ล็อกอินด้วย Email และ Password</h4>
+        <div class="form-group">
+          <input type="email" id="loginEmail" class="form-control" placeholder="email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="loginPassword" class="form-control" placeholder="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">ล็อกอิน</button>
+      </form>
+    </div>
+    <pre>
+          <code class="javascript hljs">
+             firebase.auth().signInWithPasswordAndEmail(email, password).then(user => {
+               console.log(user.uid);
+             }).catch(e => {
+               if(e.code === 'auth/wrong-password') {
+                 console.log('รหัสผ่านไม่ถูกต้อง');
+               } else if(e.code === 'auth/user-not-found') {
+                 console.log('ยังไม่ได้เป็นสมาชิก');
+               } else {
+                 console.log('มีบางอย่างผิดพลาด');
+               }
+             })
+             
+        </code>
+      </pre>
+    <div class="col-sm-6 mx-auto text-center">
+      <h4 class="text-center">ล็อกเอาต์</h4>
+      <button id="logout-button" class="btn btn-danger btn-block mb-2" onclick="logout();">ออกจากระบบ</button>
+      <span id="check-logout-text"></span>
+    </div>
+    <pre>
+          <code class="javascript hljs">
+              firebase.auth().signOut(() => {
+                console.log('ออกจากระบบแล้ว');
+              })
+        </code>
+      </pre>
+    <div class="col-sm-6 mx-auto">
+      <form id="formRegister" class="mt-5">
+        <h4 class="text-center">สมัครสมาชิกด้วย Email และ Password</h4>
+        <div class="form-group">
+          <input type="email" id="registerEmail" class="form-control" placeholder="email" required>
+        </div>
+        <div class="form-group">
+          <input type="password" id="registerPassword" class="form-control" placeholder="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">สมัครสมาชิก</button>
+      </form>
+    </div>
+    <pre>
+              <code class="javascript hljs">
+                  firebase.auth().createUserWithEmailAndPassword(email, password).then(user => {
+                    console.log(user);
+                  }).catch(e => {
+                    console.log(e.code);
+                  });
+            </code>
+      </pre>
+
+    <div class="col-sm-6 mx-auto">
+      <form id="formResetPassword" class="mt-5">
+        <h4 class="text-center">รีเซ็ตรหัสผ่าน (ส่งลิงค์ทางอีเมล)</h4>
+        <div class="form-group">
+          <input type="email" id="resetEmail" class="form-control" placeholder="email" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">รีเซ็ต</button>
+      </form>
+    </div>
+    <pre>
+        <code class="javascript hljs">
+            firebase.auth().sendPasswordResetEmail(email).then(() => {
+              console.log('ส่งลิงค์ยืนยันไปทางอีเมลเรียบร้อยแล้ว');
+            }).catch(e => {
+              console.log(e);
+            });
+      </code>
+    </pre>
+    <div class="col-sm-6 mx-auto">
+      <form id="formDelete" class="mt-5">
+        <h4 class="text-center">ลบบัญชี</h4>
+        <button id="delete-button" type="submit" class="btn btn-danger btn-block">ลบบัญชีนี้</button>
+        <h6 class="text-center mt-2">(ล็อกอินเพื่อใช้งาน)</h6>
+      </form>
+    </div>
+    <pre>
+        <code class="javascript hljs">
+            const credential = firebase.auth.EmailAuthProvider.credential(email, password);
+            firebase.auth().currentUser.reauthenticateAndRetrieveDataWithCredential(credential).then(function () {
+              firebase.auth().currentUser.delete().then(() => {}).then(() => {
+                console.log('ลบบัญชีของคุณแล้ว');
+              }).catch(e => {
+                console.log(e.code);
+              });
+            }).catch( e =>  {
+             console.log(e.code);
+            });
+      </code>
+      </pre>
+
+    <div class="col-sm-6 mx-auto">
+      <h4 class="text-center">ตัวอย่างการบันทึกข้อมูลโดยอ้างอิงจาก User ID </h4>
+    </div>
+    <pre>
+        <code class="javascript hljs">
+            firebase.database().ref('post').child(firebase.auth().currentUser.uid).push().set({
+              message: messageText
+            });
+      </code>
+    </pre>
+    <div class="col-sm-6 mx-auto">
+    <form id="formPostMessage">
+        <h4 class="text-center">โพสข้อความ</h4>
+        <div class="form-group">
+          <input type="text" id="postMessage" class="form-control" placeholder="message" required>
+        </div>
+        <button id="post-message-button" type="submit" class="btn btn-primary btn-block">โพส</button>
+        <h6 class="text-center mt-2">(ล็อกอินเพื่อใช้งาน)</h6>
+
+      </form>
+    </div>
+    <div class="col-sm-6 mx-auto mt-3">
+        <h4 class="text-center">ดึงข้อมูลมาโชว์แบบ Realtime</h4>
+        <div id="showPostMessage" style="border: 2px solid #ccc;
+        border-radius: 10px;
+        padding: 1rem;">
+        </div>
+      </div>
+      <pre>
+          <code class="javascript hljs">
+              firebase.database().ref('post').child(firebase.auth().currentUser.uid).push().set({
+                message: messageText
+              });
+        </code>
+      </pre>
   
+    <div class="col-sm-6 mx-auto mt-5">
+        <h4 class="text-center">ตัวอย่างการอัพเดทข้อมูลสมาชิก</h4>
+        <h6 id="showUpdateName" class="text-center">(ยังไม่ได้ตั้งชื่อ)</h6>
+    </div>
+      <pre>
+          <code class="javascript hljs">
+              firebase.database().ref('user').child(firebase.auth().currentUser.uid).update({
+                name: setName
+              });
+        </code>
+      </pre>
+      <div class="col-sm-6 mx-auto mt-2">
+      <form id="formUpdateName">
+          <h4 class="text-center">เปลี่ยนชื่อ</h4>
+          <div class="form-group">
+            <input type="text" id="updateNameText" class="form-control" placeholder="name" required>
+          </div>
+          <button id="update-name-button" type="submit" class="btn btn-primary btn-block">เปลี่ยนชื่อ</button>
+          <h6 class="text-center mt-2">(ล็อกอินเพื่อใช้งาน)</h6>
+        </form>
+      </div>
+  </div>
 </body>
 <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.8.2/firebase-database.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/highlight.min.js"></script>
 <script>
   var config = {
     apiKey: "AIzaSyCZFVCQPz38ONoyDfkprQ7V5yjhk9iRMP0",
@@ -24,4 +257,8 @@
   firebase.initializeApp(config);
 </script>
 <script src="app.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+
 </html>
