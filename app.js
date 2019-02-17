@@ -97,7 +97,8 @@ document.querySelector('#formPostMessage').addEventListener('submit', e => {
   const message = document.getElementById('postMessage').value;
 
   firebase.database().ref('post').child(firebase.auth().currentUser.uid).push().set({
-    message
+    message,
+    email: firebase.auth().currentUser.email
   }).then(() => {
   alert('โพสสำเร็จ');
   document.getElementById('postMessage').innerHTML = '';
@@ -120,9 +121,9 @@ document.querySelector('#formUpdateName').addEventListener('submit', e => {
 
 firebase.database().ref("user").on("value", snap => {
   snap.forEach(snap => {
-    firebase.database().ref("post").child(snap.key).on("child_added", snap => {
+    firebase.database().ref("post").child(snap.key).limitToLast(10).on("child_added", snap => {
       var text = document.createElement('p');
-      text.textContent = snap.val().message;
+      text.innerHTML = `<span style='background: #0090ff;color: #ffffff;padding: 5px 10px 5px 10px;border-radius: 10px;'>${snap.val().email || 'ไม่ได้ระบุชื่อ'}</span> <span style="margin-left:1rem">${snap.val().message}</span>`;
       document.getElementById('showPostMessage').appendChild(text);
     })
   })
