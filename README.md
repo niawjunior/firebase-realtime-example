@@ -1,0 +1,1 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/85038769-dc26-4249-b960-9b6d5a886033/deploy-status)](https://app.netlify.com/sites/firebase-thai-example/deploys)
