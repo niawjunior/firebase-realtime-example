@@ -120,6 +120,7 @@ document.querySelector('#formUpdateName').addEventListener('submit', e => {
 });
 
 firebase.database().ref("user").on("value", snap => {
+  document.getElementById('loading-post').style.display = 'none';
   snap.forEach(snap => {
     firebase.database().ref("post").child(snap.key).limitToLast(10).on("child_added", snap => {
       var text = document.createElement('p');
