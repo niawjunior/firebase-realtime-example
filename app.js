@@ -101,7 +101,7 @@ document.querySelector('#formPostMessage').addEventListener('submit', e => {
     email: firebase.auth().currentUser.email
   }).then(() => {
   alert('โพสสำเร็จ');
-  document.getElementById('postMessage').innerHTML = '';
+  document.getElementById('postMessage').value = '';
   })
 });
 
@@ -113,14 +113,12 @@ document.querySelector('#formUpdateName').addEventListener('submit', e => {
     name
   }).then(() => {
   alert('อัพเดทชื่อสำเร็จ');
-  firebase.database().ref('user').child(firebase.auth().currentUser.uid).on('value', snap => {
-    document.getElementById('showUpdateName').innerHTML = snap.val().name;
-  })
   })
 });
 
-firebase.database().ref("user").on("value", snap => {
+firebase.database().ref("user").once("value", snap => {
   document.getElementById('loading-post').style.display = 'none';
+  console.log(snap.val());
   snap.forEach(snap => {
     firebase.database().ref("post").child(snap.key).limitToLast(10).on("child_added", snap => {
       var text = document.createElement('p');
@@ -128,4 +126,14 @@ firebase.database().ref("user").on("value", snap => {
       document.getElementById('showPostMessage').appendChild(text);
     })
   })
+})
+
+firebase.auth().onAuthStateChanged(user => {
+  if(user) {
+    firebase.database().ref("user").child(user.uid).on("value", snap => {
+      const name = snap.val().name || '';
+      document.getElementById('updateNameText').value = name;
+      document.getElementById('showUpdateName').innerHTML = 'สวัสดีคุณ '+ name;
+    })
+  }
 })
